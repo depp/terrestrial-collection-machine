@@ -1,0 +1,9 @@
+load("//:copts.bzl", "COPTS")
+
+cc_binary(
+    name = "tcm",
+    srcs = [
+        "main.c",
+    ],
+    copts = COPTS,
+)

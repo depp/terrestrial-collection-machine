@@ -1,0 +1,9 @@
+# Just a convenience to preview what the Markdown looks like locally.
+genrule(
+    name = "readme",
+    srcs = ["README.md"],
+    outs = ["readme.html"],
+    cmd = "pandoc --from=commonmark --to=html5 --standalone " +
+          "--metadata=\"title=$$(head -n1 <$< | cut -c3-)\" " +
+          "--output=$@ $<",
+)

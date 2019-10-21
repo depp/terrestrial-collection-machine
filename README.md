@@ -4,6 +4,22 @@ Terrestrial Collection Machine (TCM) is a demo for the [Demosplash 2019][demospl
 
 [demosplash]: http://www.demosplash.org/
 
+## Building
+
+Required software for building:
+
+- [Bazel 1.0](https://bazel.build/)
+
+To build, run:
+
+```shell
+bazel build //tcm
+```
+
+This will create the executable `bazel-bin/tcm/tcm`.
+
+Tip for Googlers: You may want to `alias blaze=bazel` in your profile, or `alias bazel=blaze` in your profile at work.
+
 ## Authors
 
 - Dietrich Epp ([Twitter: @DietrichEpp](https://twitter.com/DietrichEpp))
