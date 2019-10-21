@@ -1,4 +1,4 @@
-load("//:copts.bzl", "COPTS")
+load("//tools:copts.bzl", "COPTS")
 
 cc_binary(
     name = "tcm",
