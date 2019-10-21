@@ -4,9 +4,13 @@
 # probably be an easier way to do this in the future.
 #
 # See Bazel discussion: https://github.com/bazelbuild/bazel/issues/5198
-COPTS = [
+
+COPTS_BASE = [
     "-std=c17",
     # "-D_DEFAULT_SOURCE",
+]
+
+_CWARN = [
     "-Wall",
     "-Wextra",
     "-Wpointer-arith",
@@ -17,3 +21,12 @@ COPTS = [
     "-Winit-self",
     "-Wstrict-prototypes",
 ]
+
+COPTS = (
+    COPTS_BASE +
+    select({
+        "//tools:warnings_off": [],
+        "//tools:warnings_on": _CWARN,
+        "//tools:warnings_error": _CWARN + ["-Werror"],
+    })
+)

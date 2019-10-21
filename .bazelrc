@@ -1,0 +1,3 @@
+build --define=warnings=off
+
+try-import %workspace%/.user.bazelrc

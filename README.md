@@ -20,6 +20,14 @@ bazel build //tcm
 
 This will create the executable `bazel-bin/tcm/tcm`.
 
+While developing, it is recommended to build with warnings enabled and treated as errors, with the flag `--define=warnings=error`. The three supported values for `warnings` are off, on, and error.
+
+Instead of passing this flag manually, you can add it to a file named `.user.bazelrc`:
+
+```
+build --define=warnings=error
+```
+
 Tip for Googlers: You may want to `alias blaze=bazel` in your profile, or `alias bazel=blaze` in your profile at work.
 
 ## Authors
