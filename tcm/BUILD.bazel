@@ -6,4 +6,7 @@ cc_binary(
         "main.c",
     ],
     copts = COPTS,
+    deps = [
+        "@glfw3",
+    ],
 )

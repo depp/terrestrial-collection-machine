@@ -10,6 +10,8 @@ Required software for building:
 
 - [Bazel 1.0](https://bazel.build/)
 
+- [GLFW 3.3](https://www.glfw.org/)
+
 To build, run:
 
 ```shell
