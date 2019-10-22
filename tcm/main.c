@@ -1,3 +1,4 @@
+// OpenGL is deprecated on macOS. We don't care. This silences the warnings.
 #define GL_SILENCE_DEPRECATION 1
 
 #include <GLFW/glfw3.h>
