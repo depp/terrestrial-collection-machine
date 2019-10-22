@@ -32,6 +32,16 @@ build --define=warnings=error
 
 You can compile with the address sanitizer using `–config=asan`.
 
+### Debugging on macOS
+
+As a workaround for [Bazel issue #6327](https://github.com/bazelbuild/bazel/issues/6327) which affects debugging on macOS, add the following line to a file named `.user.bazelrc`:
+
+```
+build --strategy_regexp=^Linking=local
+```
+
+This fixes a problem where programs are not created with correct debugging information. This happens because the linker on macOS will not embed the debug information in the executable, it will instead embed absolute paths to object files containing the debug information. If the executable is linked in a sandbox, the paths will reference files in the sandbox, but the sandbox is destroyed after linking. Choosing strategy `local` links without a sandbox and the correct paths are embedded.
+
 ### Tips
 
 Tip for Googlers: You may want to `alias blaze=bazel` in your profile, or `alias bazel=blaze` in your profile at work.
