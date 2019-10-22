@@ -6,6 +6,9 @@ cc_binary(
         "main.c",
     ],
     copts = COPTS,
+    linkopts = [
+        "-framework OpenGL",
+    ],
     deps = [
         "@glfw3",
     ],
