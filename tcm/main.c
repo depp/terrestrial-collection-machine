@@ -4,6 +4,8 @@
 // To avoid conflict when we define these twice.
 #define GLFW_INCLUDE_NONE
 
+#include "tcm/packed_shaders.h"
+
 #include <OpenGL/gl3.h>
 
 #include <GLFW/glfw3.h>
@@ -11,7 +13,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 static void die(const char *msg) __attribute__((noreturn));
 
@@ -20,35 +21,14 @@ static void die(const char *msg) {
     exit(1);
 }
 
-static const char VERT_SHADER[] =
-    "#version 330\n"
-    "layout(location = 0) in vec2 in_pos;\n"
-    "out VertexData {\n"
-    "    vec3 color;\n"
-    "} o;\n"
-    "void main() {\n"
-    "    o.color = vec3(in_pos.xy, 0.0);\n"
-    "    gl_Position = vec4(in_pos, 0.0, 1.0);\n"
-    "}\n";
-
-static const char FRAG_SHADER[] =
-    "#version 330\n"
-    "in VertexData {\n"
-    "    vec3 color;\n"
-    "} i;\n"
-    "out vec4 out_color;\n"
-    "void main() {\n"
-    "    out_color = vec4(i.color, 0.0);\n"
-    "}\n";
-
 // Load a single shader, and return the shader object.
-static GLuint load_shader(GLenum type, const char *source) {
+static GLuint load_shader(GLenum type, const char *source, size_t sourcelen) {
     GLuint shader = glCreateShader(type);
     if (shader == 0) {
         die("Could not create shader");
     }
     glShaderSource(shader, 1, (const char *[]){source},
-                   (const GLint[]){strlen(source)});
+                   (const GLint[]){sourcelen});
     glCompileShader(shader);
     GLint status;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -77,8 +57,10 @@ static GLuint load_shader(GLenum type, const char *source) {
 
 // Load the shader program and return the program object.
 static GLuint load_shaders(void) {
-    GLuint vert = load_shader(GL_VERTEX_SHADER, VERT_SHADER);
-    GLuint frag = load_shader(GL_FRAGMENT_SHADER, FRAG_SHADER);
+    GLuint vert =
+        load_shader(GL_VERTEX_SHADER, TRIANGLE_VERT, sizeof(TRIANGLE_VERT));
+    GLuint frag =
+        load_shader(GL_FRAGMENT_SHADER, TRIANGLE_FRAG, sizeof(TRIANGLE_FRAG));
     GLuint prog = glCreateProgram();
     if (prog == 0) {
         die("Could not create program");

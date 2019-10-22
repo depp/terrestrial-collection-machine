@@ -4,6 +4,7 @@ cc_binary(
     name = "tcm",
     srcs = [
         "main.c",
+        ":packed_shaders",
     ],
     copts = COPTS,
     linkopts = [
@@ -12,4 +13,29 @@ cc_binary(
     deps = [
         "@glfw3",
     ],
+)
+
+py_binary(
+    name = "pack_shaders",
+    srcs = ["pack_shaders.py"],
+    # PY3 is default, but this suppresses the warning about Python 3 if the
+    # build rule fails.
+    python_version = "PY3",
+)
+
+genrule(
+    name = "packed_shaders",
+    srcs = glob([
+        "shader/*.vert",
+        "shader/*.frag",
+    ]),
+    outs = [
+        "packed_shaders.h",
+        "packed_shaders.c",
+    ],
+    cmd = "./$(location :pack_shaders) " +
+          "--out-c=$(location packed_shaders.c) " +
+          "--out-h=$(location packed_shaders.h) " +
+          "$(SRCS)",
+    tools = [":pack_shaders"],
 )
