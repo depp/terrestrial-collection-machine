@@ -10,6 +10,8 @@ Required software for building:
 
 - [Bazel 1.0](https://bazel.build/)
 
+- [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
+
 - [GLFW 3.3](https://www.glfw.org/)
 
 To build, run:
@@ -19,6 +21,15 @@ bazel build //tcm
 ```
 
 This will create the executable `bazel-bin/tcm/tcm`.
+
+### Homebrew
+
+Install the prerequisites with the following commands:
+
+```shell
+brew cask install homebrew/cask-versions/adoptopenjdk8
+brew install bazel pkg-config glfw3
+```
 
 ### Developing
 
