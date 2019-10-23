@@ -40,6 +40,7 @@ def _impl(repository_ctx):
                 "glob([\"include/%s/%s/**/*.h\"])" % (dir_name, include)
                 for include in includes
             ]
+            include_paths.append("include/" + dir_name)
         elif flag.startswith("-D"):
             defines.append(flag[2:])
         else:
