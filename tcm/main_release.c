@@ -1,9 +1,7 @@
-// OpenGL is deprecated on macOS. We don't care. This silences the warnings.
-#define GL_SILENCE_DEPRECATION 1
-
 // To avoid conflict when we define these twice.
 #define GLFW_INCLUDE_NONE
 
+#include "tcm/gl.h"
 #include "tcm/packed_shaders.h"
 
 #include <OpenGL/gl3.h>

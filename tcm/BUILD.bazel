@@ -1,12 +1,34 @@
-load("//tools:copts.bzl", "COPTS")
+load("//tools:copts.bzl", "COPTS", "CXXOPTS")
 
 cc_binary(
-    name = "tcm",
+    name = "tcm_release",
     srcs = [
-        "main.c",
+        "gl.h",
+        "main_release.c",
         ":packed_shaders",
     ],
     copts = COPTS,
+    linkopts = [
+        "-framework OpenGL",
+    ],
+    deps = [
+        "@glfw3",
+    ],
+)
+
+cc_binary(
+    name = "tcm_dev",
+    srcs = [
+        "gl.h",
+        "loader.cpp",
+        "loader.hpp",
+        "log.cpp",
+        "log.hpp",
+        "main_dev.cpp",
+        "shader.cpp",
+        "shader.hpp",
+    ],
+    copts = CXXOPTS,
     linkopts = [
         "-framework OpenGL",
     ],

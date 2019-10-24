@@ -17,10 +17,10 @@ Required software for building:
 To build, run:
 
 ```shell
-bazel build //tcm
+bazel build //tcm:tcm_release
 ```
 
-This will create the executable `bazel-bin/tcm/tcm`.
+This will create the executable `bazel-bin/tcm/tcm_release`.
 
 ### Homebrew
 
@@ -32,6 +32,8 @@ brew install bazel pkg-config glfw3
 ```
 
 ### Developing
+
+For development, use the target `//tcm:tcm_dev`. This will load shaders from disk and automatically reload them as the files change.
 
 While developing, it is recommended to build with warnings enabled and treated as errors, with the flag `--define=warnings=error`. The three supported values for `warnings` are off, on, and error.
 

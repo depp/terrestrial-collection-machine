@@ -30,3 +30,21 @@ COPTS = (
         "//tools:warnings_error": _CWARN + ["-Werror"],
     })
 )
+
+CXXOPTS_BASE = [
+    "-std=c++17",
+]
+
+_CXXWARN = [
+    "-Wall",
+    "-Wextra",
+]
+
+CXXOPTS = (
+    CXXOPTS_BASE +
+    select({
+        "//tools:warnings_off": [],
+        "//tools:warnings_on": _CXXWARN,
+        "//tools:warnings_error": _CXXWARN + ["-Werror"],
+    })
+)
