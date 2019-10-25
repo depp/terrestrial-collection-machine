@@ -22,6 +22,12 @@ bazel build //tcm:tcm_release
 
 This will create the executable `bazel-bin/tcm/tcm_release`.
 
+### Debian / Ubuntu
+
+```shell
+sudo apt install pkg-config libglfw3-dev
+```
+
 ### Homebrew
 
 Install the prerequisites with the following commands:
