@@ -47,6 +47,14 @@ void ChdirWorkspaceRoot(void) {
 
 namespace {
 
+timespec ModTime(const struct stat &st) {
+#if defined __APPLE__
+    return st.st_mtimespec;
+#elif defined __linux__
+    return st.st_mtim;
+#endif
+}
+
 // Read the contents of a file into a vector. Returns 0 on success, or the error
 // code on failure.
 int ReadFile(const std::string &path, std::vector<char> *data) {
@@ -138,7 +146,7 @@ void Watch::Poll() {
         SetError(errno);
         return;
     }
-    timespec mtime = st.st_mtimespec;
+    timespec mtime = ModTime(st);
     if (TimeEqual(mtime, contents_.mtime)) {
         return;
     }
