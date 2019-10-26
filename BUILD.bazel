@@ -4,6 +4,7 @@ load("//tools:markdown.bzl", "markdown")
 markdown(
     name = "html",
     srcs = [
+        "HACKING.md",
         "README.md",
     ],
 )
