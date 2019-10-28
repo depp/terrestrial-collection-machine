@@ -13,19 +13,15 @@
 
 #include <cmath>
 
-// #include <errno.h>
-// #include <math.h>
-// #include <stdio.h>
-// #include <fcntl.h>
-// #include <stdbool.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <sys/stat.h>
-// #include <unistd.h>
-
 namespace tcm {
 
 namespace {
+
+void InitGL() {
+#if !defined __APPLE__
+    glewInit();
+#endif
+}
 
 int Main(int argc, char **argv) {
     (void)argc;
@@ -67,6 +63,7 @@ int Main(int argc, char **argv) {
     fprintf(stderr, "GL_VERSION: %s\n", glGetString(GL_VERSION));
     fprintf(stderr, "GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
+    InitGL();
 
     Shader vert("triangle.vert", GL_VERTEX_SHADER);
     Shader frag("triangle.frag", GL_FRAGMENT_SHADER);

@@ -1,5 +1,10 @@
 load("//tools:copts.bzl", "COPTS", "CXXOPTS")
 
+cc_library(
+    name = "opengl_framework",
+    linkopts = ["-framework OpenGL"],
+)
+
 cc_binary(
     name = "tcm_release",
     srcs = [
@@ -29,12 +34,12 @@ cc_binary(
         "shader.hpp",
     ],
     copts = CXXOPTS,
-    linkopts = [
-        "-framework OpenGL",
-    ],
     deps = [
         "@glfw3",
-    ],
+    ] + select({
+        "@bazel_tools//src/conditions:darwin": [":opengl_framework"],
+        "//conditions:default": ["@glew"],
+    }),
 )
 
 py_binary(

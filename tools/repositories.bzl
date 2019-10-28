@@ -6,3 +6,8 @@ def add_repositories():
         spec = "glfw3",
         includes = ["GLFW"],
     )
+    pkg_config_repository(
+        name = "glew",
+        spec = "glew",
+        includes = [],
+    )
