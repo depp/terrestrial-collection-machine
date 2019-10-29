@@ -1,7 +1,7 @@
 #version 330
 
-layout(location = 0) in vec2 in_pos;
-
 void main() {
-    gl_Position = vec4(in_pos * 0.5, 0.0, 1.0);
+    int idx = gl_VertexID - 1;
+    float x = float(idx) / 8.0 - 1.0;
+    gl_Position = vec4(x, sin(4.0 * x), 0.0, 1.0);
 }
