@@ -38,7 +38,6 @@ class Shader:
         self.name = NON_ALPHANUM.sub('_', os.path.basename(path)).upper()
         with open(path, 'rb') as fp:
             self.text = fp.read()
-        print('NAME:', self.name)
     def write_c(self, fp):
         fp.write('const char {}[{}] =\n"'.format(self.name, len(self.text)))
         fp.write(NEEDS_ESCAPE.sub(escape, self.text).decode('ASCII'))
