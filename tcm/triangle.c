@@ -14,9 +14,9 @@ void triangle_init(void) {
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6,
                  (const float[][2]){
-                     {-0.6f, -0.8f},
-                     {0.6f, -0.8f},
-                     {0.0f, 0.8f},
+                     {-1.0f, -1.0f},
+                     {+1.0f, -1.0f},
+                     {+0.0f, +1.0f},
                  },
                  GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
@@ -29,5 +29,6 @@ void triangle_draw(void) {
         return;
     }
     glUseProgram(shader_triangle);
+    glBindVertexArray(arr);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }

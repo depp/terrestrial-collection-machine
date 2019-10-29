@@ -4,15 +4,12 @@
 // To avoid conflict when we define these twice.
 #define GLFW_INCLUDE_NONE
 
+#include "tcm/demo.h"
 #include "tcm/gl.h"
 #include "tcm/loader.hpp"
 #include "tcm/log.hpp"
 #include "tcm/shader.hpp"
-
-extern "C" {
 #include "tcm/shaders.h"
-#include "tcm/triangle.h"
-}
 
 #include <GLFW/glfw3.h>
 
@@ -73,7 +70,7 @@ int Main(int argc, char **argv) {
     Shader vert("triangle.vert", GL_VERTEX_SHADER);
     Shader frag("triangle.frag", GL_FRAGMENT_SHADER);
     Program prog(&shader_triangle, "triangle", {&vert, &frag});
-    triangle_init();
+    demo_init();
 
     while (!glfwWindowShouldClose(window)) {
         PollFiles();
@@ -84,7 +81,7 @@ int Main(int argc, char **argv) {
         glClearColor(color, color, color, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        triangle_draw();
+        demo_draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

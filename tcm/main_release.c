@@ -4,7 +4,7 @@
 #include "tcm/gl.h"
 #include "tcm/packed_shaders.h"
 #include "tcm/shaders.h"
-#include "tcm/triangle.h"
+#include "tcm/demo.h"
 
 #include <OpenGL/gl3.h>
 
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
 
     load_shaders();
-    triangle_init();
+    demo_init();
 
     while (!glfwWindowShouldClose(window)) {
         double time = glfwGetTime();
@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
         glClearColor(color, color, color, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        triangle_draw();
+        demo_draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

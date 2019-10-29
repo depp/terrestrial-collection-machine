@@ -8,13 +8,17 @@ cc_library(
 cc_library(
     name = "tcm_common",
     srcs = [
+        "demo.c",
+        "dragon.c",
+        "dragon.h",
         "shaders.c",
         "triangle.c",
+        "triangle.h",
     ],
     hdrs = [
+        "demo.h",
         "gl.h",
         "shaders.h",
-        "triangle.h",
     ],
     copts = COPTS,
     deps = [
