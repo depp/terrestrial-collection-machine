@@ -68,9 +68,15 @@ int Main(int argc, char **argv) {
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
     InitGL();
 
-    Shader vert("triangle.vert", GL_VERTEX_SHADER);
-    Shader frag("triangle.frag", GL_FRAGMENT_SHADER);
-    Program prog(&shader_triangle, "triangle", {&vert, &frag});
+    Shader triangle_vert("triangle.vert", GL_VERTEX_SHADER);
+    Shader triangle_frag("triangle.frag", GL_FRAGMENT_SHADER);
+    Program triangle_prog(&shader_triangle, "triangle",
+                          {&triangle_vert, &triangle_frag});
+    Shader line_vert("line.vert", GL_VERTEX_SHADER);
+    Shader line_geom("line.geom", GL_GEOMETRY_SHADER);
+    Shader line_frag("line.frag", GL_FRAGMENT_SHADER);
+    Program line_prog(&shader_line, "line",
+                      {&line_vert, &line_geom, &line_frag});
     demo_init();
 
     while (!glfwWindowShouldClose(window)) {

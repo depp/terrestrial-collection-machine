@@ -55,20 +55,15 @@ static GLuint load_shader(GLenum type, const char *source, size_t sourcelen) {
     return shader;
 }
 
-// Load the shader program and return the program object.
-static void load_shaders(void) {
-    GLuint vert =
-        load_shader(GL_VERTEX_SHADER, TRIANGLE_VERT, sizeof(TRIANGLE_VERT));
-    GLuint frag =
-        load_shader(GL_FRAGMENT_SHADER, TRIANGLE_FRAG, sizeof(TRIANGLE_FRAG));
+// Link an OpenGL shader program.
+static GLuint link_program(const GLuint *restrict shaders) {
     GLuint prog = glCreateProgram();
     if (prog == 0) {
         die("Could not create program");
     }
-    glAttachShader(prog, vert);
-    glAttachShader(prog, frag);
-    glDeleteShader(vert);
-    glDeleteShader(frag);
+    for (int i = 0; shaders[i] != 0; i++) {
+        glAttachShader(prog, shaders[i]);
+    }
     glLinkProgram(prog);
     GLint status;
     glGetProgramiv(prog, GL_LINK_STATUS, &status);
@@ -92,7 +87,7 @@ static void load_shaders(void) {
     if (!status) {
         die("Shader linking failed.");
     }
-    shader_triangle = prog;
+    return prog;
 }
 
 int main(int argc, char **argv) {
@@ -135,7 +130,17 @@ int main(int argc, char **argv) {
     fprintf(stderr, "GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
 
-    load_shaders();
+    shader_triangle = link_program((const GLuint[]){
+        load_shader(GL_VERTEX_SHADER, TRIANGLE_VERT, sizeof(TRIANGLE_VERT)),
+        load_shader(GL_FRAGMENT_SHADER, TRIANGLE_FRAG, sizeof(TRIANGLE_FRAG)),
+        0,
+    });
+    shader_line = link_program((const GLuint[]){
+        load_shader(GL_VERTEX_SHADER, LINE_VERT, sizeof(LINE_VERT)),
+        load_shader(GL_GEOMETRY_SHADER, LINE_GEOM, sizeof(LINE_GEOM)),
+        load_shader(GL_FRAGMENT_SHADER, LINE_FRAG, sizeof(LINE_FRAG)),
+        0,
+    });
     demo_init();
 
     while (!glfwWindowShouldClose(window)) {

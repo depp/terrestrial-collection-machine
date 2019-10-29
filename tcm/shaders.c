@@ -7,3 +7,5 @@
 // problem because this file gets put in a static library.
 
 GLuint shader_triangle = 0;
+
+GLuint shader_line = 0;

@@ -30,10 +30,10 @@ void dragon_init(void) {
 }
 
 void dragon_draw(void) {
-    if (shader_triangle == 0) {
+    if (shader_line == 0) {
         return;
     }
-    glUseProgram(shader_triangle);
+    glUseProgram(shader_line);
     glBindVertexArray(arr);
-    glDrawArrays(GL_LINE_STRIP, 0, 7);
+    glDrawArrays(GL_LINE_STRIP_ADJACENCY, 0, 7);
 }

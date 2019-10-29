@@ -68,6 +68,7 @@ genrule(
     name = "packed_shaders",
     srcs = glob([
         "shader/*.vert",
+        "shader/*.geom",
         "shader/*.frag",
     ]),
     outs = [

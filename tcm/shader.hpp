@@ -54,7 +54,7 @@ public:
     bool ok() const { return ok_; }
 
 private:
-    static const int kMaxShaders = 2;
+    static const int kMaxShaders = 3;
 
     // Respond to an input shader changing.
     void ShaderChanged();
