@@ -1,5 +1,7 @@
 #version 330
 
+const vec2 view = vec2(9.0 / 16.0, 1.0);
+
 layout(lines_adjacency) in;
 layout(triangle_strip, max_vertices = 4) out;
 
@@ -22,18 +24,18 @@ void main() {
             lnorm[i] = normalize(d) * vec2(-1.0, 1.0);
         }
     }
-    vec4 delta0 =
-        vec4((lnorm[0] + lnorm[1]) / (1.0 + dot(lnorm[0], lnorm[1])), 0.0, 0.0);
-    vec4 delta1 =
-        vec4((lnorm[1] + lnorm[2]) / (1.0 + dot(lnorm[1], lnorm[2])), 0.0, 0.0);
+    vec2 delta0 =
+        width * (lnorm[0] + lnorm[1]) / (1.0 + dot(lnorm[0], lnorm[1]));
+    vec2 delta1 =
+        width * (lnorm[1] + lnorm[2]) / (1.0 + dot(lnorm[1], lnorm[2]));
     dout.color = din[1].color;
-    gl_Position = gl_in[1].gl_Position - width * delta0;
+    gl_Position = vec4(view * (gl_in[1].gl_Position.xy - delta0), 0.0, 1.0);
     EmitVertex();
-    gl_Position = gl_in[1].gl_Position + width * delta0;
+    gl_Position = vec4(view * (gl_in[1].gl_Position.xy + delta0), 0.0, 1.0);
     EmitVertex();
-    gl_Position = gl_in[2].gl_Position - width * delta1;
+    gl_Position = vec4(view * (gl_in[2].gl_Position.xy - delta1), 0.0, 1.0);
     EmitVertex();
-    gl_Position = gl_in[2].gl_Position + width * delta1;
+    gl_Position = vec4(view * (gl_in[2].gl_Position.xy + delta1), 0.0, 1.0);
     EmitVertex();
     EndPrimitive();
 }

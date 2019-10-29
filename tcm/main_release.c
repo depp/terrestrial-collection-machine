@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
     GLFWwindow *window = glfwCreateWindow(
-        640, 480, "Terrestrial Collection Machine", NULL, NULL);
+        640, 360, "Terrestrial Collection Machine", NULL, NULL);
     if (!window) {
         glfwTerminate();
         die("Could not create window");

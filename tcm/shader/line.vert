@@ -6,8 +6,8 @@ out VertexData {
 
 void main() {
     int idx = gl_VertexID - 1;
-    vec2 v0 = vec2(-0.8, 0.0);
-    vec2 v1 = vec2(0.8, 0.0);
+    vec2 v0 = vec2(-1.0, 0.0);
+    vec2 v1 = vec2(1.0, 0.0);
     const int N = 8;
     float t = float(idx) / float(1 << N);
     int i;
