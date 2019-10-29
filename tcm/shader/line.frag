@@ -1,7 +1,11 @@
 #version 330
 
+in VertexData {
+    vec3 color;
+} din;
+
 out vec4 out_color;
 
 void main() {
-    out_color = vec4(0.0, 0.0, 1.0, 0.0);
+    out_color = vec4(din.color, 0.0);
 }
