@@ -16,5 +16,6 @@ void dragon_draw(void) {
     }
     glUseProgram(shader_line);
     glBindVertexArray(arr);
-    glDrawArrays(GL_LINE_STRIP_ADJACENCY, 0, 19);
+    const int N = 8;
+    glDrawArrays(GL_LINE_STRIP_ADJACENCY, 0, (1 << N) + 3);
 }

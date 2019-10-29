@@ -14,7 +14,7 @@ out VertexData {
 void main() {
     int i;
     vec2 lnorm[3];
-    const float width = 0.1;
+    const float width = 0.02;
     for (i = 0; i < 3; i++) {
         vec2 d = (gl_in[i + 1].gl_Position - gl_in[i].gl_Position).yx;
         lnorm[i] = vec2(0.0);
