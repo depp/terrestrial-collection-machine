@@ -17,19 +17,11 @@ std::string ShaderPath(const char *name) {
 } // namespace
 
 Shader::Shader(const char *name, GLenum type)
-    : path_{ShaderPath(name)},
-      type_{type},
-      shader_{0},
-      ok_{false},
-      changed_{false} {
+    : path_{ShaderPath(name)}, type_{type}, shader_{0}, ok_{false} {
     WatchFile(path_, [this](const DataBuffer &buf) { Load(buf); });
 }
 
 Shader::~Shader() {}
-
-void Shader::ClearChanged() {
-    changed_ = false;
-}
 
 void Shader::Load(const DataBuffer &buf) {
     if (!buf) {
@@ -69,22 +61,29 @@ void Shader::Load(const DataBuffer &buf) {
         return;
     }
     ok_ = true;
-    changed_ = true;
+    onchanged_.Call();
 }
 
 void Shader::SetFailed() {
     if (ok_) {
         ok_ = false;
-        changed_ = true;
+        onchanged_.Call();
     }
 }
 
 Program::Program(GLuint *program, const char *name,
                  std::initializer_list<Shader *> shaders)
-    : program_ptr_{program}, name_{name}, program_{0}, ok_{false} {
+    : program_ptr_{program},
+      name_{name},
+      program_{0},
+      ok_{false},
+      shader_changed_{false} {
     if (shaders.size() > kMaxShaders) {
         Die("%s: Too many shaders: got %zu, maximum is %d", name_.c_str(),
             shaders.size(), kMaxShaders);
+    }
+    for (Shader *const shader : shaders) {
+        shader->OnChanged([this]() { ShaderChanged(); });
     }
     auto it =
         std::copy(std::begin(shaders), std::end(shaders), std::begin(shaders_));
@@ -93,7 +92,18 @@ Program::Program(GLuint *program, const char *name,
 
 Program::~Program() {}
 
+void Program::ShaderChanged() {
+    if (!shader_changed_) {
+        shader_changed_ = true;
+        Schedule([this]() { Update(); });
+    }
+}
+
 void Program::Update() {
+    if (!shader_changed_) {
+        return;
+    }
+    shader_changed_ = false;
     GLuint shaders[kMaxShaders];
     for (int i = 0; i < kMaxShaders; i++) {
         Shader *sp = shaders_[i];

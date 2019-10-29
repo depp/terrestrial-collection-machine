@@ -20,7 +20,4 @@ using WatchCallback = std::function<void(const DataBuffer &)>;
 // Watch for changes in the given file, and call a function when it changes.
 void WatchFile(std::string path, WatchCallback callback);
 
-// Execute the file callbacks for all changed files.
-void PollFiles();
-
 } // namespace tcm

@@ -1,8 +1,8 @@
 // demo.c - Main demo entry point.
 #include "tcm/demo.h"
 
-#include "tcm/triangle.h"
 #include "tcm/dragon.h"
+#include "tcm/triangle.h"
 
 void demo_init(void) {
     triangle_init();

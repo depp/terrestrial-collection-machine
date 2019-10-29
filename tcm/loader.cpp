@@ -1,5 +1,6 @@
 #include "tcm/loader.hpp"
 
+#include "tcm/callback.hpp"
 #include "tcm/log.hpp"
 
 #include <errno.h>
@@ -186,14 +187,7 @@ std::vector<Change> GetChanges() {
     return changes;
 }
 
-} // namespace
-
-void WatchFile(std::string path,
-               std::function<void(const DataBuffer &)> callback) {
-    std::unique_ptr<Watch> watch =
-        std::make_unique<Watch>(std::move(path), std::move(callback));
-    watches.emplace_back(std::move(watch));
-}
+bool PollFilesScheduled;
 
 void PollFiles() {
     for (auto &watch : watches) {
@@ -203,6 +197,19 @@ void PollFiles() {
     for (const auto &change : changes) {
         (*change.callback)(change.data);
     }
+}
+
+} // namespace
+
+void WatchFile(std::string path,
+               std::function<void(const DataBuffer &)> callback) {
+    if (!PollFilesScheduled) {
+        PollFilesScheduled = true;
+        ScheduleEveryFrame(PollFiles);
+    }
+    std::unique_ptr<Watch> watch =
+        std::make_unique<Watch>(std::move(path), std::move(callback));
+    watches.emplace_back(std::move(watch));
 }
 
 } // namespace tcm

@@ -1,10 +1,10 @@
 // To avoid conflict when we define these twice.
 #define GLFW_INCLUDE_NONE
 
+#include "tcm/demo.h"
 #include "tcm/gl.h"
 #include "tcm/packed_shaders.h"
 #include "tcm/shaders.h"
-#include "tcm/demo.h"
 
 #include <OpenGL/gl3.h>
 

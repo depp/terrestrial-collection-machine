@@ -4,6 +4,7 @@
 // To avoid conflict when we define these twice.
 #define GLFW_INCLUDE_NONE
 
+#include "tcm/callback.hpp"
 #include "tcm/demo.h"
 #include "tcm/gl.h"
 #include "tcm/loader.hpp"
@@ -73,8 +74,7 @@ int Main(int argc, char **argv) {
     demo_init();
 
     while (!glfwWindowShouldClose(window)) {
-        PollFiles();
-        prog.Update();
+        InvokeCallbacks();
 
         double time = glfwGetTime();
         float color = std::fmod(time, 1.0);
