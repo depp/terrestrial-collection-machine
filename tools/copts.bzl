@@ -6,7 +6,8 @@
 # See Bazel discussion: https://github.com/bazelbuild/bazel/issues/5198
 
 COPTS_BASE = [
-    "-std=c17",
+    # Ubuntu 18 LTS uses GCC 7.4, but c17 is not supported until GCC 8.
+    "-std=c11",
     # "-D_DEFAULT_SOURCE",
 ]
 
