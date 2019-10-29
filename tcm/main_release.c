@@ -3,6 +3,8 @@
 
 #include "tcm/gl.h"
 #include "tcm/packed_shaders.h"
+#include "tcm/shaders.h"
+#include "tcm/triangle.h"
 
 #include <OpenGL/gl3.h>
 
@@ -54,7 +56,7 @@ static GLuint load_shader(GLenum type, const char *source, size_t sourcelen) {
 }
 
 // Load the shader program and return the program object.
-static GLuint load_shaders(void) {
+static void load_shaders(void) {
     GLuint vert =
         load_shader(GL_VERTEX_SHADER, TRIANGLE_VERT, sizeof(TRIANGLE_VERT));
     GLuint frag =
@@ -90,7 +92,7 @@ static GLuint load_shaders(void) {
     if (!status) {
         die("Shader linking failed.");
     }
-    return prog;
+    shader_triangle = prog;
 }
 
 int main(int argc, char **argv) {
@@ -133,24 +135,8 @@ int main(int argc, char **argv) {
     fprintf(stderr, "GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
 
-    GLuint prog = load_shaders();
-    GLuint arr;
-    GLuint buf;
-
-    glGenVertexArrays(1, &arr);
-    glBindVertexArray(arr);
-    glGenBuffers(1, &buf);
-    glBindBuffer(GL_ARRAY_BUFFER, buf);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6,
-                 (const float[][2]){
-                     {-0.6f, -0.8f},
-                     {0.6f, -0.8f},
-                     {0.0f, 0.8f},
-                 },
-                 GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    load_shaders();
+    triangle_init();
 
     while (!glfwWindowShouldClose(window)) {
         double time = glfwGetTime();
@@ -158,8 +144,7 @@ int main(int argc, char **argv) {
         glClearColor(color, color, color, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(prog);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        triangle_draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

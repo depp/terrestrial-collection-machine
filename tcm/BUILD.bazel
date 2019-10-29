@@ -5,26 +5,39 @@ cc_library(
     linkopts = ["-framework OpenGL"],
 )
 
+cc_library(
+    name = "tcm_common",
+    srcs = [
+        "shaders.c",
+        "triangle.c",
+    ],
+    hdrs = [
+        "gl.h",
+        "shaders.h",
+        "triangle.h",
+    ],
+    copts = COPTS,
+    deps = [
+        "@glfw3",
+    ] + select({
+        "@bazel_tools//src/conditions:darwin": [":opengl_framework"],
+        "//conditions:default": ["@glew"],
+    }),
+)
+
 cc_binary(
     name = "tcm_release",
     srcs = [
-        "gl.h",
         "main_release.c",
         ":packed_shaders",
     ],
     copts = COPTS,
-    linkopts = [
-        "-framework OpenGL",
-    ],
-    deps = [
-        "@glfw3",
-    ],
+    deps = [":tcm_common"],
 )
 
 cc_binary(
     name = "tcm_dev",
     srcs = [
-        "gl.h",
         "loader.cpp",
         "loader.hpp",
         "log.cpp",
@@ -34,12 +47,7 @@ cc_binary(
         "shader.hpp",
     ],
     copts = CXXOPTS,
-    deps = [
-        "@glfw3",
-    ] + select({
-        "@bazel_tools//src/conditions:darwin": [":opengl_framework"],
-        "//conditions:default": ["@glew"],
-    }),
+    deps = [":tcm_common"],
 )
 
 py_binary(

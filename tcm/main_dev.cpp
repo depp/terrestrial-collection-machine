@@ -9,6 +9,11 @@
 #include "tcm/log.hpp"
 #include "tcm/shader.hpp"
 
+extern "C" {
+#include "tcm/shaders.h"
+#include "tcm/triangle.h"
+}
+
 #include <GLFW/glfw3.h>
 
 #include <cmath>
@@ -67,24 +72,8 @@ int Main(int argc, char **argv) {
 
     Shader vert("triangle.vert", GL_VERTEX_SHADER);
     Shader frag("triangle.frag", GL_FRAGMENT_SHADER);
-    Program prog("triangle", {&vert, &frag});
-    GLuint arr;
-    GLuint buf;
-
-    glGenVertexArrays(1, &arr);
-    glBindVertexArray(arr);
-    glGenBuffers(1, &buf);
-    glBindBuffer(GL_ARRAY_BUFFER, buf);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6,
-                 (const float[][2]){
-                     {-0.6f, -0.8f},
-                     {0.6f, -0.8f},
-                     {0.0f, 0.8f},
-                 },
-                 GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    Program prog(&shader_triangle, "triangle", {&vert, &frag});
+    triangle_init();
 
     while (!glfwWindowShouldClose(window)) {
         PollFiles();
@@ -95,10 +84,7 @@ int Main(int argc, char **argv) {
         glClearColor(color, color, color, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (prog.ok()) {
-            glUseProgram(prog.get());
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
+        triangle_draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

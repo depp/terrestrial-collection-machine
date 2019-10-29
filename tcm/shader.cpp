@@ -79,8 +79,9 @@ void Shader::SetFailed() {
     }
 }
 
-Program::Program(const char *name, std::initializer_list<Shader *> shaders)
-    : name_{name}, program_{0}, ok_{false} {
+Program::Program(GLuint *program, const char *name,
+                 std::initializer_list<Shader *> shaders)
+    : program_ptr_{program}, name_{name}, program_{0}, ok_{false} {
     if (shaders.size() > kMaxShaders) {
         Die("%s: Too many shaders: got %zu, maximum is %d", name_.c_str(),
             shaders.size(), kMaxShaders);
@@ -139,10 +140,12 @@ void Program::Update() {
         SetFailed();
         return;
     }
+    *program_ptr_ = program_;
     ok_ = true;
 }
 
 void Program::SetFailed() {
+    *program_ptr_ = 0;
     ok_ = false;
 }
 

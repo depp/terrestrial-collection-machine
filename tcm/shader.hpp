@@ -46,16 +46,14 @@ private:
 // An OpenGL shader program.
 class Program {
 public:
-    Program(const char *name, std::initializer_list<Shader *> shaders);
+    Program(GLuint *program, const char *name,
+            std::initializer_list<Shader *> shaders);
     Program(const Program &) = delete;
     Program &operator=(const Program &) = delete;
     ~Program();
 
     // Update the shader program after the shaders have potentially changed.
     void Update();
-
-    // Get the OpenGL program.
-    GLuint get() const { return program_; }
 
     // Return true if the program is loaded and linked.
     bool ok() const { return ok_; }
@@ -66,6 +64,7 @@ private:
     // Mark the program as having failed to link or having failed shaders.
     void SetFailed();
 
+    GLuint *program_ptr_;
     const std::string name_;
     Shader *shaders_[kMaxShaders];
     GLuint program_;
