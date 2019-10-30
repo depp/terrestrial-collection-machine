@@ -6,18 +6,11 @@
 
 namespace tcm {
 
-namespace {
+const std::string ShaderDir{"tcm/shader/"};
+const std::string DevShaderDir{"dev/shader/"};
 
-std::string ShaderPath(const char *name) {
-    std::string path("tcm/shader/");
-    path.append(name);
-    return path;
-}
-
-} // namespace
-
-Shader::Shader(const char *name, GLenum type)
-    : path_{ShaderPath(name)}, type_{type}, shader_{0}, ok_{false} {
+Shader::Shader(std::string path, GLenum type)
+    : path_{std::move(path)}, type_{type}, shader_{0}, ok_{false} {
     WatchFile(path_, [this](const DataBuffer &buf) { Load(buf); });
 }
 

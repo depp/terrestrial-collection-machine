@@ -10,6 +10,10 @@ namespace tcm {
 // Change the current directory to the Bazel workspace root.
 void ChdirWorkspaceRoot(void);
 
+// Read the contents of a file into a vector. Returns 0 on success, or the error
+// code on failure.
+int ReadFile(const std::string &path, std::vector<char> *data);
+
 // A buffer containing the contents of a file.
 using DataBuffer = std::shared_ptr<const std::vector<char>>;
 

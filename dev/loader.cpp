@@ -46,18 +46,6 @@ void ChdirWorkspaceRoot(void) {
     Die(ERR_WORKSPACE);
 }
 
-namespace {
-
-timespec ModTime(const struct stat &st) {
-#if defined __APPLE__
-    return st.st_mtimespec;
-#elif defined __linux__
-    return st.st_mtim;
-#endif
-}
-
-// Read the contents of a file into a vector. Returns 0 on success, or the error
-// code on failure.
 int ReadFile(const std::string &path, std::vector<char> *data) {
     int fdes = open(path.c_str(), O_RDONLY);
     if (fdes == -1) {
@@ -88,6 +76,16 @@ int ReadFile(const std::string &path, std::vector<char> *data) {
     }
     close(fdes);
     return 0;
+}
+
+namespace {
+
+timespec ModTime(const struct stat &st) {
+#if defined __APPLE__
+    return st.st_mtimespec;
+#elif defined __linux__
+    return st.st_mtim;
+#endif
 }
 
 // Return true if two timespec are equal.

@@ -8,6 +8,7 @@
 #include "dev/loader.hpp"
 #include "dev/log.hpp"
 #include "dev/shader.hpp"
+#include "dev/text.hpp"
 #include "tcm/demo.h"
 #include "tcm/gl.h"
 #include "tcm/shaders.h"
@@ -20,7 +21,7 @@ namespace tcm {
 
 namespace {
 
-void InitGL() {
+void GLInit() {
 #if !defined __APPLE__
     glewInit();
 #endif
@@ -66,15 +67,16 @@ int Main(int argc, char **argv) {
     fprintf(stderr, "GL_VERSION: %s\n", glGetString(GL_VERSION));
     fprintf(stderr, "GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
-    InitGL();
+    GLInit();
+    TextInit();
 
-    Shader triangle_vert("triangle.vert", GL_VERTEX_SHADER);
-    Shader triangle_frag("triangle.frag", GL_FRAGMENT_SHADER);
+    Shader triangle_vert(ShaderDir + "triangle.vert", GL_VERTEX_SHADER);
+    Shader triangle_frag(ShaderDir + "triangle.frag", GL_FRAGMENT_SHADER);
     Program triangle_prog(&shader_triangle, "triangle",
                           {&triangle_vert, &triangle_frag});
-    Shader line_vert("line.vert", GL_VERTEX_SHADER);
-    Shader line_geom("line.geom", GL_GEOMETRY_SHADER);
-    Shader line_frag("line.frag", GL_FRAGMENT_SHADER);
+    Shader line_vert(ShaderDir + "line.vert", GL_VERTEX_SHADER);
+    Shader line_geom(ShaderDir + "line.geom", GL_GEOMETRY_SHADER);
+    Shader line_frag(ShaderDir + "line.frag", GL_FRAGMENT_SHADER);
     Program line_prog(&shader_line, "line",
                       {&line_vert, &line_geom, &line_frag});
     demo_init();
@@ -88,6 +90,7 @@ int Main(int argc, char **argv) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         demo_draw();
+        TextDraw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

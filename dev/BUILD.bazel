@@ -12,7 +12,11 @@ cc_binary(
         "main_dev.cpp",
         "shader.cpp",
         "shader.hpp",
+        "text.cpp",
+        "text.hpp",
     ],
     copts = CXXOPTS,
-    deps = ["//tcm:tcm_common"],
+    deps = [
+        "//tcm:tcm_common",
+    ],
 )

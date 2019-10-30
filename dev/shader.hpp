@@ -10,10 +10,13 @@
 
 namespace tcm {
 
+extern const std::string ShaderDir;
+extern const std::string DevShaderDir;
+
 // An OpenGL shader.
 class Shader {
 public:
-    Shader(const char *name, GLenum type);
+    Shader(std::string path, GLenum type);
     Shader(const Shader &) = delete;
     Shader &operator=(const Shader &) = delete;
     ~Shader();
