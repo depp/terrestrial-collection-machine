@@ -85,9 +85,6 @@ int Main(int argc, char **argv) {
         InvokeCallbacks();
 
         double time = glfwGetTime();
-        float color = std::fmod(time, 1.0);
-        glClearColor(color, color, color, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         demo_draw(time);
         TextDraw();

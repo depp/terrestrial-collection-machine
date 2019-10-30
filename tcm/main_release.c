@@ -10,7 +10,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -145,9 +144,6 @@ int main(int argc, char **argv) {
 
     while (!glfwWindowShouldClose(window)) {
         double time = glfwGetTime();
-        float color = fmod(time, 1.0);
-        glClearColor(color, color, color, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
 
         demo_draw(time);
 

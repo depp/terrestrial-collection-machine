@@ -2,14 +2,13 @@
 #include "tcm/demo.h"
 
 #include "tcm/dragon.h"
-#include "tcm/triangle.h"
+#include "tcm/gl.h"
 
 void demo_init(void) {
-    triangle_init();
     dragon_init();
 }
 
 void demo_draw(double time) {
-    triangle_draw();
+    glClear(GL_COLOR_BUFFER_BIT);
     dragon_draw(time);
 }
