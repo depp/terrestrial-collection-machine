@@ -4,9 +4,10 @@
 #include "dev/log.hpp"
 
 #include <algorithm>
-#include <charconv>
+#include <cstdlib>
 
 #include <dirent.h>
+#include <errno.h>
 #include <sys/stat.h>
 
 namespace tcm {
@@ -64,10 +65,10 @@ void PathTemplate::Init() {
             name.compare(0, prefix_.size(), prefix_) != 0) {
             continue;
         }
-        unsigned long value;
-        auto result = std::from_chars(name.data() + prefix_.size(),
-                                      name.data() + name.size(), value);
-        if (result.ptr == name.data() + prefix_.size()) {
+        const char *num = name.c_str() + prefix_.size();
+        char *end;
+        unsigned long value = std::strtoul(num, &end, 10);
+        if (end == num) {
             continue;
         }
         next = std::max(next, value + 1);
