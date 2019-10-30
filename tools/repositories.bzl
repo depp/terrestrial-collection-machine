@@ -4,10 +4,14 @@ def add_repositories():
     pkg_config_repository(
         name = "glfw3",
         spec = "glfw3",
-        includes = ["GLFW"],
+        includes = [
+            "GLFW/*.h",
+        ],
     )
     pkg_config_repository(
         name = "glew",
         spec = "glew",
-        includes = [],
+        includes = [
+            "GL/glew.h",
+        ],
     )

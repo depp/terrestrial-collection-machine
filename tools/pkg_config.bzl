@@ -24,7 +24,6 @@ def _impl(repository_ctx):
     defines = []
     include_paths = []
     include_root = repository_ctx.path("include")
-    hdr_lists = []
     for flag in cflags:
         if flag.startswith("-I"):
             # Create a symlink in the directory and add *.h files in it to hdrs.
@@ -36,20 +35,18 @@ def _impl(repository_ctx):
                 repository_ctx.path(path),
                 include_root.get_child(dir_name),
             )
-            hdr_lists += [
-                "glob([\"include/%s/%s/**/*.h\"])" % (dir_name, include)
-                for include in includes
-            ]
             include_paths.append("include/" + dir_name)
         elif flag.startswith("-D"):
             defines.append(flag[2:])
         else:
             fail("Cannot parse compiler flag %r for %s" % (flag, spec))
 
-    if hdr_lists:
-        hdrs = " + ".join(hdr_lists)
-    else:
-        hdrs = "[]"
+    hdrs = "[]"
+    if includes:
+        hdrs = "glob(%s)" % repr([
+            "include/*/" + include
+            for include in includes
+        ])
 
     substitutions = {
         "%{name}": repr(repository_ctx.name),
