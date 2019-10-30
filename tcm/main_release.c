@@ -6,8 +6,6 @@
 #include "tcm/packed_shaders.h"
 #include "tcm/shaders.h"
 
-#include <OpenGL/gl3.h>
-
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -128,6 +126,9 @@ int main(int argc, char **argv) {
     fprintf(stderr, "GL_VERSION: %s\n", glGetString(GL_VERSION));
     fprintf(stderr, "GL_VENDOR: %s\n", glGetString(GL_VENDOR));
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
+#if !defined __APPLE__
+    glewInit();
+#endif
 
     shader_triangle = link_program((const GLuint[]){
         load_shader(GL_VERTEX_SHADER, TRIANGLE_VERT, sizeof(TRIANGLE_VERT)),
