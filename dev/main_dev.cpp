@@ -89,7 +89,7 @@ int Main(int argc, char **argv) {
         glClearColor(color, color, color, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        demo_draw();
+        demo_draw(time);
         TextDraw();
 
         glfwSwapBuffers(window);

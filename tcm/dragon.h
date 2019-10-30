@@ -3,4 +3,4 @@
 
 void dragon_init(void);
 
-void dragon_draw(void);
+void dragon_draw(double time);

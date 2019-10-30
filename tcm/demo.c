@@ -9,7 +9,7 @@ void demo_init(void) {
     dragon_init();
 }
 
-void demo_draw(void) {
+void demo_draw(double time) {
     triangle_draw();
-    dragon_draw();
+    dragon_draw(time);
 }

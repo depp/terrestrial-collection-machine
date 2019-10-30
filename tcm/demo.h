@@ -7,7 +7,7 @@ extern "C" {
 
 void demo_init(void);
 
-void demo_draw(void);
+void demo_draw(double time);
 
 #if defined __cplusplus
 }
