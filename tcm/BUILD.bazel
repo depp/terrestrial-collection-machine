@@ -1,4 +1,4 @@
-load("//tools:copts.bzl", "COPTS", "CXXOPTS")
+load("//tools:copts.bzl", "COPTS")
 
 cc_library(
     name = "opengl_framework",
@@ -21,6 +21,7 @@ cc_library(
         "shaders.h",
     ],
     copts = COPTS,
+    visibility = ["//dev:__pkg__"],
     deps = [
         "@glfw3",
     ] + select({
@@ -30,29 +31,12 @@ cc_library(
 )
 
 cc_binary(
-    name = "tcm_release",
+    name = "tcm",
     srcs = [
         "main_release.c",
         ":packed_shaders",
     ],
     copts = COPTS,
-    deps = [":tcm_common"],
-)
-
-cc_binary(
-    name = "tcm_dev",
-    srcs = [
-        "callback.cpp",
-        "callback.hpp",
-        "loader.cpp",
-        "loader.hpp",
-        "log.cpp",
-        "log.hpp",
-        "main_dev.cpp",
-        "shader.cpp",
-        "shader.hpp",
-    ],
-    copts = CXXOPTS,
     deps = [":tcm_common"],
 )
 

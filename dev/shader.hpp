@@ -1,9 +1,9 @@
 // shader.hpp - Load OpenGL shaders.
 #pragma once
 
-#include "tcm/callback.hpp"
+#include "dev/callback.hpp"
+#include "dev/loader.hpp"
 #include "tcm/gl.h"
-#include "tcm/loader.hpp"
 
 #include <initializer_list>
 #include <string>

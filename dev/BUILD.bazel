@@ -1,0 +1,18 @@
+load("//tools:copts.bzl", "CXXOPTS")
+
+cc_binary(
+    name = "dev",
+    srcs = [
+        "callback.cpp",
+        "callback.hpp",
+        "loader.cpp",
+        "loader.hpp",
+        "log.cpp",
+        "log.hpp",
+        "main_dev.cpp",
+        "shader.cpp",
+        "shader.hpp",
+    ],
+    copts = CXXOPTS,
+    deps = ["//tcm:tcm_common"],
+)

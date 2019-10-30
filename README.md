@@ -23,10 +23,10 @@ Required software for building:
 To build, run:
 
 ```shell
-bazel build //tcm:tcm_release
+bazel build //tcm:tcm
 ```
 
-This will create the executable `bazel-bin/tcm/tcm_release`.
+This will create the executable `bazel-bin/tcm/tcm`.
 
 ### Debian / Ubuntu
 

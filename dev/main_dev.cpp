@@ -4,12 +4,12 @@
 // To avoid conflict when we define these twice.
 #define GLFW_INCLUDE_NONE
 
-#include "tcm/callback.hpp"
+#include "dev/callback.hpp"
+#include "dev/loader.hpp"
+#include "dev/log.hpp"
+#include "dev/shader.hpp"
 #include "tcm/demo.h"
 #include "tcm/gl.h"
-#include "tcm/loader.hpp"
-#include "tcm/log.hpp"
-#include "tcm/shader.hpp"
 #include "tcm/shaders.h"
 
 #include <GLFW/glfw3.h>

@@ -1,6 +1,6 @@
-#include "tcm/shader.hpp"
+#include "dev/shader.hpp"
 
-#include "tcm/log.hpp"
+#include "dev/log.hpp"
 
 #include <algorithm>
 

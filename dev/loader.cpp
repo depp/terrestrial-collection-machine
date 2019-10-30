@@ -1,7 +1,7 @@
-#include "tcm/loader.hpp"
+#include "dev/loader.hpp"
 
-#include "tcm/callback.hpp"
-#include "tcm/log.hpp"
+#include "dev/callback.hpp"
+#include "dev/log.hpp"
 
 #include <errno.h>
 #include <fcntl.h>

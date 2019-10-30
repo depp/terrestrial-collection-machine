@@ -6,9 +6,9 @@ If you join the team, add yourself to the list of authors in README.md and add y
 
 The main build targets are:
 
-- `//tcm:tcm_release`—The release build, for distribution. This produces a self-contained binary which can run on other systems. OpenGL shaders are embedded directly into the program.
+- `//tcm:tcm`—The release build, for distribution. This produces a self-contained binary which can run on other systems. OpenGL shaders are embedded directly into the program.
 
-- `//tcm:tcm_dev`—The development and testing build. This program is not portable and must be run from within the workspace. It will automatically reload OpenGL shaders from the filesystem as they change, so you can see the changes live.
+- `//dev:dev`—The development and testing build. This program is not portable and must be run from within the workspace. It will automatically reload OpenGL shaders from the filesystem as they change, so you can see the changes live.
 
 ## Build Options
 
