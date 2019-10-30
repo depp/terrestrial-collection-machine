@@ -3,11 +3,61 @@
 
 #include "dev/log.hpp"
 
-#if defined __APPLE__
+#include <vector>
 
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+namespace tcm {
+namespace {
+struct BaseState {
+    explicit BaseState(std::string path);
+    BaseState(const BaseState &) = delete;
+    ~BaseState();
+    BaseState &operator=(const BaseState &) = delete;
+
+    bool Open();
+    bool Commit();
+
+    const std::string path;
+    int fdes = -1;
+};
+
+BaseState::BaseState(std::string path) : path{path} {}
+
+BaseState::~BaseState() {
+    if (fdes != -1) {
+        close(fdes);
+        unlink(path.c_str());
+    }
+}
+
+bool BaseState::Open() {
+    fdes = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+    if (fdes == -1) {
+        ErrorErrno(errno, "Could not create %s", path.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool BaseState::Commit() {
+    int r = close(fdes);
+    fdes = -1;
+    if (r == -1) {
+        int ecode = errno;
+        unlink(path.c_str());
+        ErrorErrno(ecode, "Could not write %s", path.c_str());
+        return false;
+    }
+    return true;
+}
+
+} // namespace
+} // namespace tcm
+
+#if defined __APPLE__
 
 #include <ApplicationServices/ApplicationServices.h>
 
@@ -21,20 +71,18 @@ void FreeData(void *info, const void *data, size_t size) {
     (void)info;
 }
 
-struct State {
-    State() = default;
-    State(const State &) = delete;
-    State &operator=(const State &) = delete;
+struct State : BaseState {
+    State(std::string path);
     ~State();
 
-    std::string path;
-    int fdes = -1;
     CGColorSpaceRef color_space = nullptr;
     CGDataProviderRef data = nullptr;
     CGImageRef image = nullptr;
     CGDataConsumerRef consumer = nullptr;
     CGImageDestinationRef dest = nullptr;
 };
+
+State::State(std::string path) : BaseState{std::move(path)} {}
 
 State::~State() {
     if (consumer != nullptr) {
@@ -48,10 +96,6 @@ State::~State() {
     }
     if (color_space != nullptr) {
         CFRelease(color_space);
-    }
-    if (fdes != -1) {
-        close(fdes);
-        unlink(path.c_str());
     }
 }
 
@@ -74,8 +118,7 @@ void ReleaseConsumer(void *info) {
 
 bool WritePNG(const std::string &path, const void *data, int width,
               int height) {
-    State st;
-    st.path = path;
+    State st{path};
     st.color_space = CGColorSpaceCreateDeviceRGB();
     if (st.color_space == nullptr) {
         Error("CGColorSpaceCreateDeviceRGB failed");
@@ -94,9 +137,7 @@ bool WritePNG(const std::string &path, const void *data, int width,
         Error("CGImageCreate failed");
         return false;
     }
-    st.fdes = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
-    if (st.fdes == -1) {
-        ErrorErrno(errno, "Could not create %s", path.c_str());
+    if (!st.Open()) {
         return false;
     }
 
@@ -122,17 +163,102 @@ bool WritePNG(const std::string &path, const void *data, int width,
         return false;
     }
 
-    int r = close(st.fdes);
-    st.fdes = -1;
-    if (r != 0) {
-        int ecode = errno;
-        unlink(path.c_str());
-        ErrorErrno(ecode, "Could not write to %s", path.c_str());
-        return false;
-    }
-    return true;
+    return st.Commit();
 }
 
 } // namespace tcm
 
-#endif
+#else /* __APPLE__ */
+
+#include <png.h>
+
+namespace tcm {
+
+namespace {
+
+struct State : BaseState {
+    explicit State(std::string path);
+    ~State();
+
+    png_struct *png = nullptr;
+    png_info *info = nullptr;
+    std::vector<unsigned char *> rows;
+};
+
+State::State(std::string path) : BaseState{std::move(path)} {}
+
+State::~State() {
+    png_destroy_write_struct(&png, &info);
+}
+
+void UserError(png_struct *png, const char *msg) {
+    const State &st = *static_cast<State *>(png_get_error_ptr(png));
+    Error("Could not write %s: LibPNG: %s", st.path.c_str(), msg);
+    longjmp(png_jmpbuf(png), 1);
+}
+
+void UserWarning(png_struct *png, const char *msg) {
+    const State &st = *static_cast<State *>(png_get_error_ptr(png));
+    Warning("Writing %s: LibPNG: %s", st.path.c_str(), msg);
+}
+
+void WriteData(png_struct *png, png_byte *data, png_size_t length) {
+    const State &st = *static_cast<State *>(png_get_io_ptr(png));
+    size_t pos = 0;
+    while (pos < length) {
+        ssize_t r = write(st.fdes, data + pos, length - pos);
+        if (r == -1) {
+            int ecode = errno;
+            ErrorErrno(ecode, "Could not write %s", st.path.c_str());
+            longjmp(png_jmpbuf(png), 1);
+        }
+        pos += r;
+    }
+}
+
+void OutputFlush(png_struct *png) {
+    (void)png;
+}
+
+} // namespace
+
+bool WritePNG(const std::string &path, const void *data, int width,
+              int height) {
+    State st{path};
+    st.png = png_create_write_struct(PNG_LIBPNG_VER_STRING, &st, UserError,
+                                     UserWarning);
+    if (st.png == nullptr) {
+        Error("Could not write %s: could not initialize LibPNG", path.c_str());
+        return false;
+    }
+    if (setjmp(png_jmpbuf(st.png)) != 0) {
+        return false;
+    }
+    st.info = png_create_info_struct(st.png);
+    if (st.info == nullptr) {
+        Error("Could not write %s: could not create LibPNG info structure",
+              path.c_str());
+        return false;
+    }
+    if (!st.Open()) {
+        return false;
+    }
+    png_set_write_fn(st.png, &st, WriteData, OutputFlush);
+    png_set_IHDR(st.png, st.info, width, height, 8, PNG_COLOR_TYPE_RGB,
+                 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+                 PNG_FILTER_TYPE_DEFAULT);
+    png_write_info(st.png, st.info);
+    png_set_filler(st.png, 0, PNG_FILLER_BEFORE);
+    st.rows.resize(height);
+    for (int i = 0; i < height; i++) {
+        st.rows[i] = const_cast<unsigned char *>(
+            static_cast<const unsigned char *>(data) + i * width * 4);
+    }
+    png_write_image(st.png, st.rows.data());
+    png_write_end(st.png, nullptr);
+    return st.Commit();
+}
+
+} // namespace tcm
+
+#endif /* !__APPLE__ */

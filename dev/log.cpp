@@ -100,4 +100,13 @@ void ErrorGL(int glerror, const char *fmt, ...) {
     va_end(ap);
 }
 
+void Warning(const char *fmt, ...) {
+    fputs("Warning: ", stderr);
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
+    fputc('\n', stderr);
+}
+
 } // namespace tcm

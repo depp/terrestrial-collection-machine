@@ -15,3 +15,12 @@ def add_repositories():
             "GL/glew.h",
         ],
     )
+    pkg_config_repository(
+        name = "libpng",
+        spec = "libpng",
+        includes = [
+            "png.h",
+            "pngconf.h",
+            "pnglibconf.h",
+        ],
+    )

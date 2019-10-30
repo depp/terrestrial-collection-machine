@@ -23,4 +23,7 @@ void ErrorErrno(int ecode, const char *fmt, ...)
 void ErrorGL(int glerror, const char *fmt, ...)
     __attribute__((format(printf, 2, 3)));
 
+// Print a warning message.
+void Warning(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
+
 } // namespace tcm

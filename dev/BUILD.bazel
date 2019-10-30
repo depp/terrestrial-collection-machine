@@ -28,6 +28,8 @@ cc_binary(
         "@bazel_tools//src/conditions:darwin": [
             "//tools/macos:application_services",
         ],
-        "//conditions:default": [],
+        "//conditions:default": [
+            "@libpng",
+        ],
     }),
 )

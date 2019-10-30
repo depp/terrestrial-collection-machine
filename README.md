@@ -20,6 +20,8 @@ Required software for building:
 
 - [GLEW 2.0](http://glew.sourceforge.net) (except on macOS)
 
+- [LibPNG](http://www.libpng.org/pub/png/libpng.html) (except on macOS)
+
 To build, run:
 
 ```shell
@@ -33,7 +35,7 @@ This will create the executable `bazel-bin/tcm/tcm`.
 To install the prerequisites:
 
 ```shell
-sudo apt install pkg-config libglfw3-dev libglew-dev
+sudo apt install pkg-config libglfw3-dev libglew-dev libpng-dev
 ```
 
 Bazel is available as a `.deb` package from the [Bazel releases](https://github.com/bazelbuild/bazel/releases) page.
