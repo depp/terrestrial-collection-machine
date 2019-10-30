@@ -10,7 +10,11 @@ const std::string ShaderDir{"tcm/shader/"};
 const std::string DevShaderDir{"dev/shader/"};
 
 Shader::Shader(std::string path, GLenum type)
-    : path_{std::move(path)}, type_{type}, shader_{0}, ok_{false} {
+    : status_{path},
+      path_{std::move(path)},
+      type_{type},
+      shader_{0},
+      ok_{false} {
     WatchFile(path_, [this](const DataBuffer &buf) { Load(buf); });
 }
 
@@ -18,6 +22,7 @@ Shader::~Shader() {}
 
 void Shader::Load(const DataBuffer &buf) {
     if (!buf) {
+        status_.Set("No file.");
         SetFailed();
         return;
     }
@@ -25,7 +30,9 @@ void Shader::Load(const DataBuffer &buf) {
     if (shader_ == 0) {
         shader_ = glCreateShader(type_);
         if (shader_ == 0) {
-            ErrorGL(glGetError(), "%s: glCreateShader", path_.c_str());
+            std::string text("glCreateShader: ");
+            text.append(GLErrorName(glGetError()));
+            status_.Set(std::move(text));
             SetFailed();
             return;
         }
@@ -36,8 +43,9 @@ void Shader::Load(const DataBuffer &buf) {
     glCompileShader(shader_);
     GLint status;
     glGetShaderiv(shader_, GL_COMPILE_STATUS, &status);
+    std::string text;
     if (!status) {
-        Error("%s: compilation failed", path_.c_str());
+        text.append("Compilation failed.\n");
     }
     GLint loglen;
     // loglen includes nul terminator.
@@ -45,10 +53,12 @@ void Shader::Load(const DataBuffer &buf) {
     if (loglen > 1) {
         std::vector<char> log(loglen);
         glGetShaderInfoLog(shader_, loglen, nullptr, log.data());
-        log[loglen - 1] = '\0';
-        fputs("-- Shader compilation log --\n", stderr);
-        fputs(log.data(), stderr);
+        if (text.empty()) {
+            text.append("Compilation succeeded.\n");
+        }
+        text.append(log.data(), loglen - 1);
     }
+    status_.Set(std::move(text));
     if (!status) {
         SetFailed();
         return;
@@ -64,10 +74,11 @@ void Shader::SetFailed() {
     }
 }
 
-Program::Program(GLuint *program, const char *name,
+Program::Program(GLuint *program, std::string name,
                  std::initializer_list<Shader *> shaders)
-    : program_ptr_{program},
-      name_{name},
+    : status_{name},
+      program_ptr_{program},
+      name_{std::move(name)},
       program_{0},
       ok_{false},
       shader_changed_{false} {
@@ -102,6 +113,7 @@ void Program::Update() {
         Shader *sp = shaders_[i];
         if (sp != nullptr) {
             if (!sp->ok()) {
+                status_.Clear();
                 SetFailed();
                 return;
             }
@@ -113,7 +125,9 @@ void Program::Update() {
     if (program_ == 0) {
         program_ = glCreateProgram();
         if (program_ == 0) {
-            ErrorGL(glGetError(), "%s: glCreateShader", name_.c_str());
+            std::string text("glCreateProgram: ");
+            text.append(GLErrorName(glGetError()));
+            status_.Set(std::move(text));
             SetFailed();
             return;
         }
@@ -126,8 +140,9 @@ void Program::Update() {
     glLinkProgram(program_);
     GLint status;
     glGetProgramiv(program_, GL_LINK_STATUS, &status);
+    std::string text;
     if (!status) {
-        Error("%s: linking failed", name_.c_str());
+        text.append("Linking failed.\n");
     }
     GLint loglen;
     // loglen includes nul terminator.
@@ -135,10 +150,12 @@ void Program::Update() {
     if (loglen > 1) {
         std::vector<char> log(loglen);
         glGetProgramInfoLog(program_, loglen, nullptr, log.data());
-        log[loglen - 1] = '\0';
-        fputs("-- Shader linking log --\n", stderr);
-        fputs(log.data(), stderr);
+        if (text.empty()) {
+            text.append("Linking succeeded.\n");
+        }
+        text.append(log.data(), loglen - 1);
     }
+    status_.Set(std::move(text));
     if (!status) {
         SetFailed();
         return;

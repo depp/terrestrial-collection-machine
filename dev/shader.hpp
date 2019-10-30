@@ -3,6 +3,7 @@
 
 #include "dev/callback.hpp"
 #include "dev/loader.hpp"
+#include "dev/text.hpp"
 #include "tcm/gl.h"
 
 #include <initializer_list>
@@ -37,6 +38,7 @@ private:
     // Mark the shader as having failed to load or compile.
     void SetFailed();
 
+    StatusItem status_;
     const std::string path_;
     const GLenum type_;
     GLuint shader_;
@@ -47,7 +49,7 @@ private:
 // An OpenGL shader program.
 class Program {
 public:
-    Program(GLuint *program, const char *name,
+    Program(GLuint *program, std::string name,
             std::initializer_list<Shader *> shaders);
     Program(const Program &) = delete;
     Program &operator=(const Program &) = delete;
@@ -68,6 +70,7 @@ private:
     // Mark the program as having failed to link or having failed shaders.
     void SetFailed();
 
+    StatusItem status_;
     GLuint *program_ptr_;
     const std::string name_;
     Shader *shaders_[kMaxShaders];

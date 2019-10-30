@@ -146,40 +146,9 @@ GLuint prog;
 GLuint texture;
 GLuint arr;
 GLuint buf[2]; // quad, text
-int glyphcount;
 int icsize[2];
 float csize[2];
 float tsize[2];
-
-struct Vertex {
-    int16_t x, y;
-    uint8_t u, v, fg, bg;
-};
-
-void PutText(const std::string &text) __attribute__((unused));
-void PutText(const std::string &text) {
-    const int advance = icsize[0];
-    size_t n = text.size();
-    std::vector<Vertex> verts(n);
-    int x = 8;
-    int y = 8;
-    for (size_t i = 0; i < n; i++) {
-        uint32_t c = static_cast<uint8_t>(text[i]);
-        Vertex &v = verts[i];
-        v.x = x;
-        v.y = y;
-        v.u = c % Columns;
-        v.v = c / Columns;
-        v.fg = 0;
-        v.bg = 0;
-        x += advance;
-    }
-    glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
-    glBufferData(GL_ARRAY_BUFFER, n * sizeof(Vertex), verts.data(),
-                 GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glyphcount = n;
-}
 
 } // namespace
 
@@ -234,12 +203,136 @@ void TextInit() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
 
-    PutText("Hello, world!");
+namespace {
+
+std::vector<StatusItem *> status_items;
+bool status_items_changed;
+
+struct Vertex {
+    int16_t x, y;
+    uint8_t u, v, fg, bg;
+};
+
+struct Pos {
+    int x;
+    int y;
+};
+
+std::vector<Vertex> vertexes;
+
+const Pos pos0 = {8, 8};
+
+Pos PutText(Pos pos, const std::string &text) {
+    Pos cur = pos;
+    size_t i = 0;
+    while (true) {
+        size_t limit = i;
+        int rem = (640 - 2 * pos0.x - cur.x) / icsize[0];
+        if (rem > 0) {
+            limit += rem;
+        }
+        if (limit > text.size()) {
+            limit = text.size();
+        }
+        size_t end = i;
+        while (end < limit && text[end] != '\n') {
+            end++;
+        }
+        if (end < text.size() && text[end] != '\n') {
+            size_t j = end;
+            while (j > i && text[j - 1] != ' ') {
+                j--;
+            }
+            if (j > i) {
+                end = j;
+            }
+        }
+        for (; i != end; i++) {
+            uint8_t c = text[i];
+            Vertex v;
+            v.x = cur.x;
+            v.y = cur.y;
+            v.u = c % Columns;
+            v.v = c / Columns;
+            v.fg = 0;
+            v.bg = 0;
+            vertexes.push_back(v);
+            cur.x += icsize[0];
+        }
+        if (i == text.size()) {
+            break;
+        }
+        cur.x = pos0.x;
+        cur.y += icsize[1];
+        if (text[i] == '\n') {
+            i++;
+        } else {
+            cur.x += icsize[0] * 2;
+        }
+    }
+    return cur;
+}
+
+void UpdateText() {
+    status_items_changed = false;
+    vertexes.clear();
+    Pos pos = pos0;
+    for (const StatusItem *it : status_items) {
+        const std::string &text = it->value();
+        if (!text.empty()) {
+            pos = PutText(pos, it->name());
+            pos = PutText(pos, ": ");
+            pos = PutText(pos, text);
+            if (pos.x != pos0.x) {
+                pos.x = pos0.x;
+                pos.y += icsize[1];
+            }
+            pos.y += 4;
+        }
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, buf[1]);
+    glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(Vertex),
+                 vertexes.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+} // namespace
+
+StatusItem::StatusItem(std::string name) : name_{std::move(name)} {
+    status_items.push_back(this);
+}
+
+StatusItem::~StatusItem() {
+    auto it = std::find(std::begin(status_items), std::end(status_items), this);
+    if (it != std::end(status_items)) {
+        status_items.erase(it);
+    }
+}
+
+void StatusItem::Clear() {
+    if (!text_.empty()) {
+        status_items_changed = true;
+        text_.clear();
+    }
+}
+
+void StatusItem::Set(std::string s) {
+    if (text_ != s) {
+        status_items_changed = true;
+        text_ = std::move(s);
+    }
 }
 
 void TextDraw() {
-    if (prog == 0 || glyphcount == 0) {
+    if (prog == 0) {
+        return;
+    }
+    if (status_items_changed) {
+        UpdateText();
+    }
+    if (vertexes.empty()) {
         return;
     }
     glUseProgram(prog);
@@ -250,7 +343,7 @@ void TextDraw() {
     glUniform1i(glGetUniformLocation(prog, "texture"), 0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, glyphcount);
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, vertexes.size());
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
