@@ -71,12 +71,12 @@ void LoadFont(const std::string &path, Font *font) {
         Die("Unknown font format: %s", path.c_str());
     }
     uint32_t count, headersize, cheight, cwidth;
-    bool has_table;
+    // bool has_table;
     if (std::memcmp(data.data(), MAGIC_1, 2) == 0) {
         uint8_t mode = data[2];
         uint8_t charsize = data[3];
         count = (mode & Mode512) != 0 ? 512 : 256;
-        has_table = (mode & ModeHasTab) != 0;
+        // has_table = (mode & ModeHasTab) != 0;
         headersize = 4;
         cheight = charsize;
         cwidth = 8;
@@ -90,8 +90,8 @@ void LoadFont(const std::string &path, Font *font) {
             Die("Unknown PSF2 version: %s", path.c_str());
         }
         headersize = Read(ptr + 8);
-        uint32_t flags = Read(ptr + 12);
-        has_table = (flags & FlagHasTab) != 0;
+        // uint32_t flags = Read(ptr + 12);
+        // has_table = (flags & FlagHasTab) != 0;
         count = Read(ptr + 16);
         cheight = Read(ptr + 24);
         cwidth = Read(ptr + 32);
