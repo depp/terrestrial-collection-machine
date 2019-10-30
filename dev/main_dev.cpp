@@ -7,6 +7,7 @@
 #include "dev/callback.hpp"
 #include "dev/loader.hpp"
 #include "dev/log.hpp"
+#include "dev/screenshot.hpp"
 #include "dev/shader.hpp"
 #include "dev/text.hpp"
 #include "tcm/demo.h"
@@ -25,6 +26,20 @@ void GLInit() {
 #if !defined __APPLE__
     glewInit();
 #endif
+}
+
+void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
+                 int mods) {
+    (void)window;
+    (void)scancode;
+    (void)mods;
+    switch (key) {
+    case GLFW_KEY_F12:
+        if (action == GLFW_PRESS) {
+            CaptureScreenshot();
+        }
+        break;
+    }
 }
 
 int Main(int argc, char **argv) {
@@ -69,6 +84,7 @@ int Main(int argc, char **argv) {
     fprintf(stderr, "GL_RENDERER: %s\n", glGetString(GL_RENDERER));
     GLInit();
     TextInit();
+    glfwSetKeyCallback(window, KeyCallback);
 
     Shader triangle_vert(ShaderDir + "triangle.vert", GL_VERTEX_SHADER);
     Shader triangle_frag(ShaderDir + "triangle.frag", GL_FRAGMENT_SHADER);

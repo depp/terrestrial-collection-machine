@@ -1,11 +1,6 @@
 load("//tools:copts.bzl", "COPTS")
 
 cc_library(
-    name = "opengl_framework",
-    linkopts = ["-framework OpenGL"],
-)
-
-cc_library(
     name = "tcm_common",
     srcs = [
         "demo.c",
@@ -25,7 +20,7 @@ cc_library(
     deps = [
         "@glfw3",
     ] + select({
-        "@bazel_tools//src/conditions:darwin": [":opengl_framework"],
+        "@bazel_tools//src/conditions:darwin": ["//tools/macos:opengl"],
         "//conditions:default": ["@glew"],
     }),
 )

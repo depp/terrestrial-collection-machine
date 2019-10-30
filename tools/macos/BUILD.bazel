@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "opengl",
+    linkopts = ["-framework OpenGL"],
+)
+
+cc_library(
+    name = "application_services",
+    linkopts = ["-framework ApplicationServices"],
+)

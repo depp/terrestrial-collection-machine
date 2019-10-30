@@ -2,6 +2,10 @@
 
 If you join the team, add yourself to the list of authors in README.md and add yourself to the copyright in LICENSE.txt.
 
+## Controls
+
+- F12: Capture screenshot
+
 ## Build Targets
 
 The main build targets are:

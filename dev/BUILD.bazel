@@ -5,11 +5,15 @@ cc_binary(
     srcs = [
         "callback.cpp",
         "callback.hpp",
+        "image.cpp",
+        "image.hpp",
         "loader.cpp",
         "loader.hpp",
         "log.cpp",
         "log.hpp",
         "main_dev.cpp",
+        "screenshot.cpp",
+        "screenshot.hpp",
         "shader.cpp",
         "shader.hpp",
         "text.cpp",
@@ -18,5 +22,10 @@ cc_binary(
     copts = CXXOPTS,
     deps = [
         "//tcm:tcm_common",
-    ],
+    ] + select({
+        "@bazel_tools//src/conditions:darwin": [
+            "//tools/macos:application_services",
+        ],
+        "//conditions:default": [],
+    }),
 )
