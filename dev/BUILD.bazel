@@ -12,6 +12,8 @@ cc_binary(
         "log.cpp",
         "log.hpp",
         "main_dev.cpp",
+        "path.cpp",
+        "path.hpp",
         "screenshot.cpp",
         "screenshot.hpp",
         "shader.cpp",

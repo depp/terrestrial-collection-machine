@@ -4,6 +4,7 @@
 #include "dev/callback.hpp"
 #include "dev/image.hpp"
 #include "dev/log.hpp"
+#include "dev/path.hpp"
 #include "tcm/gl.h"
 
 #include <memory>
@@ -13,21 +14,8 @@ namespace tcm {
 
 namespace {
 
-// Next counter value to use for screenshot paths.
-int screenshot_counter;
-
-// Create a unique path for a screenshot.
-std::string CreateScreenshotPath() {
-    std::string ctr = std::to_string(screenshot_counter);
-    screenshot_counter++;
-    std::string path{"shot"};
-    for (size_t i = ctr.size(); i < 4; i++) {
-        path.push_back('0');
-    }
-    path.append(ctr);
-    path.append(".png");
-    return path;
-}
+// Template for screenshots.
+PathTemplate path_template{"shots", "shot", ".png"};
 
 // A screenshot of the buffer.
 class Screenshot {
@@ -96,7 +84,7 @@ void Screenshot::Save() {
     if (data == nullptr) {
         ErrorGL(glGetError(), "glMapBuffer");
     } else {
-        std::string path = CreateScreenshotPath();
+        std::string path = path_template.Create();
         if (WritePNG(path, data, width_, height_)) {
             std::fprintf(stderr, "Wrote screenshot %s\n", path.c_str());
         }
